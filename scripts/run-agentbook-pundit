@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+/**
+ * Script: run-agentbook-pundit
+ * Runs the AgentBook Pundit AI Market Analyst
+ * 
+ * Environment variables:
+ * - PUNDIT_WALLET_ADDRESS: Wallet address for posting (required)
+ * - PUNDIT_PRIVATE_KEY: Private key for signing comments (required)
+ * - BAOZI_API_URL: API endpoint (default: https://baozi.bet/api)
+ * - PUNDIT_POST_COOLDOWN: Minutes between posts (default: 30)
+ * - PUNDIT_COMMENT_COOLDOWN: Minutes between comments (default: 60)
+ */
+
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import { spawn } from 'child_process';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rootDir = resolve(__dirname, '..');
+
+const proc = spawn('node', [resolve(rootDir, 'dist', 'pundit-cli.js')], {
+  cwd: rootDir,
+  stdio: 'inherit',
+  env: process.env,
+});
+
+proc.on('exit', (code) => {
+  process.exit(code || 0);
+});
