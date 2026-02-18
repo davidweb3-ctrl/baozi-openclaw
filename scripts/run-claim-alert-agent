@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+/**
+ * Script: run-claim-alert-agent
+ * Starts the Claim & Alert Agent with configuration from environment variables
+ * 
+ * Environment variables:
+ * - WATCH_WALLETS: Comma-separated list of wallet addresses to monitor (required)
+ * - NOTIFICATION_CHANNEL: telegram | discord | webhook (default: webhook)
+ * - POLL_INTERVAL_MINUTES: How often to check (default: 15)
+ * - ALERT_CLAIMABLE: Enable claimable alerts (default: true)
+ * - ALERT_CLOSING_SOON: Enable closing soon alerts (default: true)
+ * - ALERT_CLOSING_HOURS: Hours before close to alert (default: 6)
+ * - ALERT_ODDS_SHIFT: Enable odds shift alerts (default: true)
+ * - ALERT_ODDS_THRESHOLD: Percentage shift threshold (default: 15)
+ * 
+ * Channel-specific:
+ * - TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID (for telegram)
+ * - DISCORD_WEBHOOK_URL (for discord)
+ * - WEBHOOK_URL + WEBHOOK_HEADERS (for webhook)
+ */
+
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import { spawn } from 'child_process';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rootDir = resolve(__dirname, '..');
+
+// Run the compiled agent
+const proc = spawn('node', [resolve(rootDir, 'dist', 'index.js')], {
+  cwd: rootDir,
+  stdio: 'inherit',
+  env: process.env,
+});
+
+proc.on('exit', (code) => {
+  process.exit(code || 0);
+});
